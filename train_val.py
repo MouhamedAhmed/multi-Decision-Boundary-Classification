@@ -4,49 +4,73 @@ from datetime import datetime
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
+# from torch.utils.data import DataLoader
 
 from torchvision import datasets, transforms
 
 import matplotlib.pyplot as plt
+from dataloader import *
 
 
 
 
 ###############
 # train iteration
-def train(train_loader, model, criterion, optimizer, device):
+def train(train_set, batch_size, model, criterion, optimizer, device):
     '''
     Function for the training step of the training loop
     '''
 
     model.train()
     running_loss = 0
-    
-    for X, y_true in train_loader:
+
+    l = len(train_set)
+    correct = 0
+    # for X, y_true in train_loader:
+    while len(train_set)>0:
+        batch = get_batch(train_set,batch_size)
+        normalize_batch(batch)
+        X, y_true = convert_batch_to_tensors(batch)
+     
+        # print("X:")
+        # print(X.size())
+        # print("y_true")
+        # print(y_true.size())
 
         optimizer.zero_grad()
-        
+        # print(X.size())
+        # print(y_true.size())
+
         X = X.to(device)
         y_true = y_true.to(device)
     
+        
         # Forward pass
         _,y_hat = model(X) 
         # print(y_true)
         loss = criterion(y_hat, y_true.float()) 
         # print(y_true)
-        running_loss += loss.item() * X.size(0)
+        running_loss += loss.item()
+        # print(loss.item())
+        for i in range(len(y_hat)):
+            y_hat_rounded = round(y_hat[i].item())
+            if y_hat_rounded == y_true[i]:
+                correct += 1
 
+        
+
+        
         # Backward pass
         loss.backward()
         optimizer.step()
         
-    epoch_loss = running_loss / len(train_loader.dataset)
-    return model, optimizer, epoch_loss
+    epoch_loss = running_loss / l
+    epoch_acc = correct / l
+    return model,optimizer, epoch_loss, epoch_acc
 
 
 # validate 
-def validate(valid_loader, model, criterion, device):
+def validate(test_set, batch_size, model, criterion, device):
     '''
     Function for the validation step of the training loop
     '''
@@ -54,23 +78,35 @@ def validate(valid_loader, model, criterion, device):
     model.eval()
     running_loss = 0
     
-    for X, y_true in valid_loader:
-    
+    l = len(test_set)
+    correct = 0
+    while len(test_set)>0:
+        batch = get_batch(test_set,batch_size)
+        normalize_batch(batch)
+        X, y_true = convert_batch_to_tensors(batch)    
+
         X = X.to(device)
         y_true = y_true.to(device)
 
         # Forward pass and record loss
         _,y_hat= model(X) 
         loss = criterion(y_hat, y_true.float()) 
-        running_loss += loss.item() * X.size(0)
+        running_loss += loss.item()
+        # print(loss.item())
+        # y_hat_rounded = round(y_hat.item())
+        for i in range(len(y_hat)):
+            y_hat_rounded = round(y_hat[i].item())
+            if y_hat_rounded == y_true[i]:
+                correct += 1
 
-    epoch_loss = running_loss / len(valid_loader.dataset)
+    epoch_loss = running_loss / l
+    epoch_acc = correct / l
         
-    return model, epoch_loss
+    return model, epoch_loss, epoch_acc
 
 
 
-def training_loop(model, criterion, optimizer, train_loader, valid_loader, epochs, device, print_every=1):
+def training_loop(model, criterion, batch_size, optimizer, epochs, device, print_every=1):
     '''
     Function defining the entire training loop
     '''
@@ -83,19 +119,21 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
     # Train model
     for epoch in range(0, epochs):
 
+        # load dataset
+        train_set, test_set = load_data()
         # training
-        model, optimizer, train_loss = train(train_loader, model, criterion, optimizer, device)
+        model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, criterion, optimizer, device)
         train_losses.append(train_loss)
 
         # validation
         with torch.no_grad():
-            model, valid_loss = validate(valid_loader, model, criterion, device)
+            model, valid_loss, valid_acc = validate(test_set, batch_size, model, criterion, device)
             valid_losses.append(valid_loss)
 
         if epoch % print_every == (print_every - 1):
             
-            train_acc = get_accuracy(model, train_loader, device=device)
-            valid_acc = get_accuracy(model, valid_loader, device=device)
+            # train_acc = get_accuracy(model, train_loader, device=device)
+            # valid_acc = get_accuracy(model, valid_loader, device=device)
                 
             print(f'{datetime.now().time().replace(microsecond=0)} --- '
                   f'Epoch: {epoch}\t'
@@ -106,7 +144,8 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
 
     plot_losses(train_losses, valid_losses)
     
-    return model, optimizer, (train_losses, valid_losses)
+    return model, optimizer, train_losses, valid_losses
+
 
 
 ############
