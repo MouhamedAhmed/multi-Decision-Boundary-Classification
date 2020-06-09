@@ -31,29 +31,22 @@ def train(train_set, batch_size, model, criterion, optimizer, device):
         batch = get_batch(train_set,batch_size)
         normalize_batch(batch)
         X, y_true = convert_batch_to_tensors(batch)
-     
-        # print("X:")
-        # print(X.size())
-        # print("y_true")
-        # print(y_true.size())
-
+        # print(type(np.array(y_true)[0][0]))
+        
         optimizer.zero_grad()
-        # print(X.size())
-        # print(y_true.size())
+
 
         X = X.to(device)
         y_true = y_true.to(device)
     
         
         # Forward pass
-        _,y_hat = model(X) 
-        # print(y_true)
-        loss = criterion(y_hat, y_true.float()) 
-        # print(y_true)
+        y_hat,_ = model(X) 
+        # print(y_hat.size(),y_true.size())
+        loss = criterion(y_hat, y_true) 
         running_loss += loss.item()
-        # print(loss.item())
         for i in range(len(y_hat)):
-            y_hat_rounded = round(y_hat[i].item())
+            y_hat_rounded = round(y_hat[i].cpu().detach().numpy()[0])
             if y_hat_rounded == y_true[i]:
                 correct += 1
 
@@ -84,18 +77,19 @@ def validate(test_set, batch_size, model, criterion, device):
         batch = get_batch(test_set,batch_size)
         normalize_batch(batch)
         X, y_true = convert_batch_to_tensors(batch)    
+        # print(type(y_true))
 
         X = X.to(device)
         y_true = y_true.to(device)
 
         # Forward pass and record loss
-        _,y_hat= model(X) 
-        loss = criterion(y_hat, y_true.float()) 
+        y_hat,_= model(X) 
+        # print(type(y_hat))
+        loss = criterion(y_hat, y_true) 
         running_loss += loss.item()
-        # print(loss.item())
-        # y_hat_rounded = round(y_hat.item())
+
         for i in range(len(y_hat)):
-            y_hat_rounded = round(y_hat[i].item())
+            y_hat_rounded = round(y_hat[i].cpu().detach().numpy()[0])
             if y_hat_rounded == y_true[i]:
                 correct += 1
 
@@ -131,9 +125,10 @@ def training_loop(model, criterion, batch_size, optimizer, epochs, device, print
             valid_losses.append(valid_loss)
 
         if epoch % print_every == (print_every - 1):
-            
-            # train_acc = get_accuracy(model, train_loader, device=device)
-            # valid_acc = get_accuracy(model, valid_loader, device=device)
+            train_set, test_set = load_data()
+
+            train_acc = get_accuracy(model, train_set,batch_size, device=device)
+            valid_acc = get_accuracy(model, test_set,batch_size, device=device)
                 
             print(f'{datetime.now().time().replace(microsecond=0)} --- '
                   f'Epoch: {epoch}\t'
@@ -150,7 +145,7 @@ def training_loop(model, criterion, batch_size, optimizer, epochs, device, print
 
 ############
 # helper functions
-def get_accuracy(model, data_loader, device):
+def get_accuracy(model, dataset,batch_size, device):
     '''
     Function for computing the accuracy of the predictions over the entire data_loader
     '''
@@ -160,8 +155,10 @@ def get_accuracy(model, data_loader, device):
     
     with torch.no_grad():
         model.eval()
-        for X, y_true in data_loader:
-
+        while len(dataset)>0:
+            batch = get_batch(dataset,batch_size)
+            normalize_batch(batch)
+            X, y_true = convert_batch_to_tensors(batch)    
             X = X.to(device)
             y_true = y_true.to(device)
 

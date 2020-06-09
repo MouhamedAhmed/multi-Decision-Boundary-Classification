@@ -36,16 +36,9 @@ class LeNet5(nn.Module):
 
 
     def forward(self, x):
-        # print("x0")
-        # print(x.size())
         x = self.feature_extractor(x)
-        # print("x1")
-        # print(x.size())
         x = torch.flatten(x, 1)
-        # print("x2")
-        # print(x.size())
         logits = self.classifier(x)
-        probs = self.sig(logits)
-        # print(self.n)
-        # print(logits.size())
+        probs = F.softmax(logits, dim=1)
+       
         return logits, probs
