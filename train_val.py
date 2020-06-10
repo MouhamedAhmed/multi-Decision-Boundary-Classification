@@ -93,6 +93,7 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
         y_true1 = y_true1.to(device)
         X2 = X2.to(device)
         y_true2 = y_true2.to(device)
+        y = y.float()
         y = y.to(device)
 
 
