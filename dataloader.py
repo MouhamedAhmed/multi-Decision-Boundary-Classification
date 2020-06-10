@@ -6,7 +6,7 @@ from PIL import Image
 
 import torch
 import matplotlib.pyplot as plt
-
+import random
 
 
 def load_data():
@@ -53,7 +53,8 @@ def get_batch (dataset,batch_size):
     '''
     dataset: list of lists each containig data of a label
     '''
-
+    if len(dataset) == 0:
+        return []
     batch_size = min(batch_size,len(dataset))
     
     # get random indices = batch_size at max
@@ -78,8 +79,8 @@ def get_batch (dataset,batch_size):
         }
         batch.append(d)
         del dataset[indices[i]]
-        
-   
+
+    random.shuffle(batch)
     return batch
 
 ##################

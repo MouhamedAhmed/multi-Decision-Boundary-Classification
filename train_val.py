@@ -16,91 +16,134 @@ from dataloader import *
 
 ###############
 # train iteration
-def train(train_set, batch_size, model, criterion, optimizer, device):
+def train(train_set, batch_size, model, cross_entropy_loss_criterion, optimizer,contrastive_ratio,margin, device):
     '''
     Function for the training step of the training loop
     '''
 
     model.train()
-    running_loss = 0
+    cross_entropy_loss = 0
+    contrastive_l = 0
 
     l = len(train_set)
     correct = 0
     # for X, y_true in train_loader:
     while len(train_set)>0:
-        batch = get_batch(train_set,batch_size)
-        normalize_batch(batch)
-        X, y_true = convert_batch_to_tensors(batch)
-        # print(type(np.array(y_true)[0][0]))
+        # get batch 1
+        batch1 = get_batch(train_set,batch_size)
+        normalize_batch(batch1)
+        X1, y_true1 = convert_batch_to_tensors(batch1)
+
+        # get batch 2
+        # batch2 = get_batch(train_set,batch_size)
+       
         
         optimizer.zero_grad()
 
 
-        X = X.to(device)
-        y_true = y_true.to(device)
-    
+        X1 = X1.to(device)
+        y_true1 = y_true1.to(device)
+        
         
         # Forward pass
-        y_hat,_ = model(X) 
+        y_hat1,logits = model(X1) 
         # print(y_hat.size(),y_true.size())
-        loss = criterion(y_hat, y_true) 
-        running_loss += loss.item()
-        for i in range(len(y_hat)):
-            y_hat_rounded = round(y_hat[i].cpu().detach().numpy()[0])
-            if y_hat_rounded == y_true[i]:
-                correct += 1
+
+        loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
+        loss2 = contrastive_loss(logits,y_true1,device,margin)
+        cross_entropy_loss += loss1.item()
+        contrastive_l += loss2.item()
+
+        # batch 2
+        # if len(batch2) != 0:
+        #     normalize_batch(batch2)
+        #     X2, y_true2 = convert_batch_to_tensors(batch2)
+        #     X2 = X2.to(device)
+        #     y_true2 = y_true2.to(device) 
+        #     y_hat2,_ = model(X2) 
+        #     loss2 = cross_entropy_loss_criterion(y_hat2, y_true2)
+        #     cross_entropy_loss += loss2.item()
+        #     loss = loss1 + loss2
+        # else:
+        loss = (contrastive_ratio * loss2) + ((1-contrastive_ratio) * loss1)
+        # print(batch1)
+
+
+
+        # for i in range(len(y_hat)):
+        #     y_hat_rounded = round(y_hat[i].cpu().detach().numpy()[0])
+        #     if y_hat_rounded == y_true[i]:
+        #         correct += 1
 
         
 
-        
         # Backward pass
         loss.backward()
         optimizer.step()
         
-    epoch_loss = running_loss / l
+    epoch_loss = ((contrastive_ratio * contrastive_l) + ((1-contrastive_ratio) * cross_entropy_loss)) / l
     epoch_acc = correct / l
     return model,optimizer, epoch_loss, epoch_acc
 
 
 # validate 
-def validate(test_set, batch_size, model, criterion, device):
+def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_ratio,margin, device):
     '''
     Function for the validation step of the training loop
     '''
    
     model.eval()
-    running_loss = 0
+    cross_entropy_loss = 0
+    contrastive_l = 0
     
     l = len(test_set)
     correct = 0
     while len(test_set)>0:
-        batch = get_batch(test_set,batch_size)
-        normalize_batch(batch)
-        X, y_true = convert_batch_to_tensors(batch)    
-        # print(type(y_true))
+        # get batch 1
+        batch1 = get_batch(test_set,batch_size)
+        normalize_batch(batch1)
+        X1, y_true1 = convert_batch_to_tensors(batch1)
 
-        X = X.to(device)
-        y_true = y_true.to(device)
+        # get batch 2
+        # batch2 = get_batch(test_set,batch_size)
+        
 
-        # Forward pass and record loss
-        y_hat,_= model(X) 
-        # print(type(y_hat))
-        loss = criterion(y_hat, y_true) 
-        running_loss += loss.item()
+        X1 = X1.to(device)
+        y_true1 = y_true1.to(device)
 
-        for i in range(len(y_hat)):
-            y_hat_rounded = round(y_hat[i].cpu().detach().numpy()[0])
-            if y_hat_rounded == y_true[i]:
-                correct += 1
+        # Forward pass
+        y_hat1,logits = model(X1)
 
-    epoch_loss = running_loss / l
+        # loss
+        loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
+        loss2 = contrastive_loss(logits,y_true1,device,margin)
+        cross_entropy_loss += loss1.item()
+        contrastive_l += loss2.item()
+        # batch 2
+        # if len(batch2) != 0:
+        #     normalize_batch(batch2)
+        #     X2, y_true2 = convert_batch_to_tensors(batch2)
+        #     X2 = X2.to(device)
+        #     y_true2 = y_true2.to(device) 
+        #     y_hat2,_ = model(X2) 
+        #     loss2 = cross_entropy_loss_criterion(y_hat2, y_true2)
+        #     cross_entropy_loss += loss2.item()
+
+
+
+        # for i in range(len(y_hat)):
+        #     y_hat_rounded = round(y_hat[i].cpu().detach().numpy()[0])
+        #     if y_hat_rounded == y_true[i]:
+        #         correct += 1
+
+    epoch_loss = ((contrastive_ratio * contrastive_l) + ((1-contrastive_ratio) * cross_entropy_loss)) / l
     epoch_acc = correct / l
         
     return model, epoch_loss, epoch_acc
 
 
 
-def training_loop(model, criterion, batch_size, optimizer, epochs, device, print_every=1):
+def training_loop(model, cross_entropy_loss_criterion, batch_size, optimizer, epochs,contrastive_ratio,margin, device, print_every=1):
     '''
     Function defining the entire training loop
     '''
@@ -116,12 +159,12 @@ def training_loop(model, criterion, batch_size, optimizer, epochs, device, print
         # load dataset
         train_set, test_set = load_data()
         # training
-        model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, criterion, optimizer, device)
+        model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, cross_entropy_loss_criterion, optimizer,contrastive_ratio,margin, device)
         train_losses.append(train_loss)
 
         # validation
         with torch.no_grad():
-            model, valid_loss, valid_acc = validate(test_set, batch_size, model, criterion, device)
+            model, valid_loss, valid_acc = validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_ratio,margin, device)
             valid_losses.append(valid_loss)
 
         if epoch % print_every == (print_every - 1):
@@ -140,6 +183,47 @@ def training_loop(model, criterion, batch_size, optimizer, epochs, device, print
     plot_losses(train_losses, valid_losses)
     
     return model, optimizer, train_losses, valid_losses
+
+
+############
+# contrastive loss
+def contrastive_loss(y_hatt, y_truee,device, margin = 0):
+    y_true = y_truee.cpu().detach().numpy()
+    y_hat = y_hatt.cpu().detach().numpy()
+    indices_1 = random.sample(range(0, len(y_true)), len(y_true)//2)
+    indices = list(range(0, len(y_true)))
+    indices_2 = list(set(indices) - set(indices_1)) 
+    y_hat1 = [y_hat[i] for i in indices_1]
+    y_hat2 = [y_hat[i] for i in indices_2]
+    y_true1 = [y_true[i] for i in indices_1]
+    y_true2 = [y_true[i] for i in indices_2]
+    y = [int(i == j) for i, j in zip(y_true1, y_true2)]
+    distance = list(np.abs(np.array(y_hat1)-np.array(y_hat2)))
+    d1 = np.array(distance)**2
+    d1 = np.sum(d1,axis = 1)
+    # print(d1.shape)
+    margins = np.ones(d1.shape) * margin
+    z = np.zeros(d1.shape)
+    # print(margins.shape)
+    # print(np.array(distance).shape)
+    d2 = margins - d1
+    d2 = np.maximum(d2,z)
+    # print(d2)
+    # d2 = d2 ** 2
+    # d1 = d1 ** 2
+    loss = 0
+    for i in range(len(y)):
+        if y[i] == 0:
+            loss += d2[i]
+        else:
+            loss += d1[i]
+    loss = torch.Tensor([loss])
+    loss = loss.to(device)
+    return loss
+
+
+
+
 
 
 
