@@ -25,7 +25,7 @@ N_EPOCHS = 15
 
 IMG_SIZE = 32
 N_CLASSES = 10
-contrastive_ratio = 0.5
+contrastive_ratio = 0.0
 margin = 32
 
 
