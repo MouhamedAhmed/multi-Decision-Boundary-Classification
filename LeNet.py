@@ -26,11 +26,11 @@ class LeNet5(nn.Module):
             nn.Tanh()
         )
 
-        self.classifier = nn.Sequential(
+        self.classifier1 = nn.Sequential(
             nn.Linear(in_features=120, out_features=84),
-            nn.Tanh(),
-            nn.Linear(in_features=84, out_features=n_classes),
+            nn.Tanh()
         )
+        self.classifier2 = nn.Linear(in_features=84, out_features=n_classes)
         self.sig = nn.Sigmoid()
 
 
@@ -38,7 +38,8 @@ class LeNet5(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = torch.flatten(x, 1)
-        logits = self.classifier(x)
-        probs = F.softmax(logits, dim=1)
+        l1 = self.classifier1(x)
+        l2 = self.classifier2(l1)
+        probs = F.softmax(l2, dim=1)
        
-        return logits, probs
+        return l1, probs
