@@ -49,8 +49,8 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
 
 
         # loss
-        cross_entropy_loss1 = cross_entropy_loss_criterion(logits1, y_true1) 
-        cross_entropy_loss2 = cross_entropy_loss_criterion(logits2, y_true2) 
+        cross_entropy_loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
+        cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
         contrastive_loss = contrastive_loss_criterion(logits1,logits2,y)
         cross_entropy_loss = cross_entropy_loss1+ cross_entropy_loss2
@@ -104,8 +104,8 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
 
 
         # loss
-        cross_entropy_loss1 = cross_entropy_loss_criterion(logits1, y_true1) 
-        cross_entropy_loss2 = cross_entropy_loss_criterion(logits2, y_true2) 
+        cross_entropy_loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
+        cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
         contrastive_loss = contrastive_loss_criterion(logits1,logits2,y)
         cross_entropy_loss = cross_entropy_loss1 + cross_entropy_loss2
