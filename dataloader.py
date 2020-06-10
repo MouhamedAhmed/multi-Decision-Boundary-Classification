@@ -104,11 +104,25 @@ def convert_batch_to_tensors(batch):
     labels = np.asarray(labels)
     images = np.expand_dims(images, axis=1)
     # labels = np.reshape(labels,(labels.shape[0],1))
-    images = torch.Tensor(images)
     # print(labels)
-    labels = torch.LongTensor(labels)
-    # print(labels)
+    indices_1 = random.sample(range(0, len(images)), len(images)//2)
+    indices = list(range(0, len(images)))
+    indices_2 = list(set(indices) - set(indices_1)) 
+    images1 = [images[i] for i in indices_1]
+    images2 = [images[i] for i in indices_2]
+    labels1 = [labels[i] for i in indices_1]
+    labels2 = [labels[i] for i in indices_2]
+    y = [int(i != j) for i, j in zip(labels1, labels2)]
 
-    return images,labels
+    
+    
+    
+    images1 = torch.Tensor(images1)
+    images2 = torch.Tensor(images2)
+    labels1 = torch.LongTensor(labels1)
+    labels2 = torch.LongTensor(labels2)
+    y = torch.LongTensor(y)
+
+    return images1,labels1,images2,labels2,y
     
 
