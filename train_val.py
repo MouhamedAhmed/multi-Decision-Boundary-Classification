@@ -42,6 +42,7 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         y = y.to(device)
         X1_ord = X1_ord.to(device)
         X2_ord = X2_ord.to(device)
+        y_ord = y_ord.float()
         y_ord = y_ord.to(device)
 
         optimizer.zero_grad()
