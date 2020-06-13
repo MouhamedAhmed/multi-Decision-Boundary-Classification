@@ -107,6 +107,7 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
         X1_ord = X1_ord.to(device)
         X2_ord = X2_ord.to(device)
         y_ord = y_ord.to(device)
+        y_ord = y_ord.float()
 
         # Forward pass
         logits1,y_hat1 = model(X1)
