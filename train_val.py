@@ -25,7 +25,7 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
     cross_entropy_loss_epoch = 0
     contrastive_loss_epoch = 0
 
-    l = len(train_set)
+    l = len(train_set)/batch_size
     correct = 0
     i = 0
     while len(train_set)>0:
@@ -59,14 +59,15 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
         contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
+#         print("y:",y)
         contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
+#         print("y_ord:",y_ord)
         contrastive_loss = (contrastive_loss_unord + contrastive_loss_ord)/2
         cross_entropy_loss = cross_entropy_loss1+ cross_entropy_loss2
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
         contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
 
-        # print("batch #",i," cross entropy loss =" , cross_entropy_loss1.item() + cross_entropy_loss2.item() , " contrastive loss = ",contrastive_loss.item())
 
         loss = (contrastive_ratio * contrastive_loss) + ((1-contrastive_ratio) * cross_entropy_loss)
         i += 1        
@@ -90,7 +91,7 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
     cross_entropy_loss_epoch = 0
     contrastive_loss_epoch = 0
     
-    l = len(test_set)
+    l = len(test_set)/batch_size
     correct = 0
     while len(test_set)>0:
         # get batch
