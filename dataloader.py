@@ -105,6 +105,7 @@ def convert_batch_to_tensors(batch):
     images = np.expand_dims(images, axis=1)
     # labels = np.reshape(labels,(labels.shape[0],1))
     # print(labels)
+    # print(images.shape)
     indices_1 = random.sample(range(0, len(images)), len(images)//2)
     indices = list(range(0, len(images)))
     indices_2 = list(set(indices) - set(indices_1)) 
@@ -123,6 +124,53 @@ def convert_batch_to_tensors(batch):
     labels2 = torch.LongTensor(labels2)
     y = torch.LongTensor(y)
 
-    return images1,labels1,images2,labels2,y
+
+    images = list(images)
+    labels = list(labels)
+
+    images_ordered1 = []
+    images_ordered2 = []
+    labels_ordered1 = []
+    labels_ordered2 = []
+    labels_set = set(labels)
+    for x in labels_set:
+        indices_of_label = [i for i in range(len(labels)) if labels[i] == x]
+        imgs1 = [images[i] for i in indices_of_label[0:len(indices_of_label)//2]]
+        imgs2 = [images[i] for i in indices_of_label[len(indices_of_label)//2:len(indices_of_label)]]
+        # print(np.asarray(imgs1).shape)
+        # imgs1 = np.asarray(imgs1)
+        # imgs2 = np.asarray(imgs2)
+        for i in imgs1:
+            images_ordered1.append(i)
+        for i in imgs2:
+            images_ordered2.append(i)
+        # print("hhhh",np.array(images_ordered1).shape)
+
+        lbls1 = [labels[i] for i in indices_of_label[0:len(indices_of_label)//2]]
+        lbls2 = [labels[i] for i in indices_of_label[len(indices_of_label)//2:len(indices_of_label)]]
+        # lbls1 = np.array(lbls1)
+        # lbls2 = np.array(lbls2)
+        for i in lbls1:
+            labels_ordered1.append(i)
+        for i in lbls2:
+            labels_ordered2.append(i)
+        
+        labels_ordered1 = labels_ordered1[0:min(len(labels_ordered1),len(labels_ordered2))]
+        labels_ordered2 = labels_ordered2[0:min(len(labels_ordered1),len(labels_ordered2))]
+        images_ordered1 = images_ordered1[0:min(len(images_ordered1),len(images_ordered2))]
+        images_ordered2 = images_ordered2[0:min(len(images_ordered1),len(images_ordered2))]
+    # print(labels_ordered1)
+    # print(labels_ordered2)
+    
+    y_ordered = [int(i != j) for i, j in zip(labels_ordered1, labels_ordered2)]
+
+    images_ordered1 = torch.Tensor(images_ordered1)
+    images_ordered2 = torch.Tensor(images_ordered2)
+    y_ordered = torch.LongTensor(y_ordered)
+
+    # print(images_ordered1.size())
+    # print(images1.size())
+
+    return images1,labels1,images2,labels2,y,images_ordered1,images_ordered2,y_ordered
     
 

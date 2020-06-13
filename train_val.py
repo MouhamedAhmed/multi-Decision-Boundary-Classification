@@ -32,7 +32,7 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
          # get batch
         batch = get_batch(train_set,batch_size)
         normalize_batch(batch)
-        X1, y_true1, X2, y_true2, y = convert_batch_to_tensors(batch)
+        X1, y_true1, X2, y_true2, y, X1_ord, X2_ord, y_ord = convert_batch_to_tensors(batch)
 
         X1 = X1.to(device)
         y_true1 = y_true1.to(device)
@@ -40,23 +40,30 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         y_true2 = y_true2.to(device)
         y = y.float()
         y = y.to(device)
+        X1_ord = X1_ord.to(device)
+        X2_ord = X2_ord.to(device)
+        y_ord = y_ord.to(device)
+
         optimizer.zero_grad()
 
 
         # Forward pass
         logits1,y_hat1 = model(X1)
         logits2,y_hat2 = model(X2)
-
+        logits1_ord,_ = model(X1_ord)
+        logits2_ord,_ = model(X2_ord)
 
         # loss
         cross_entropy_loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
         cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
-        contrastive_loss = contrastive_loss_criterion(logits1,logits2,y)
+        contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
+        contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
+        contrastive_loss = (contrastive_loss_unord + contrastive_loss_ord)/2
         cross_entropy_loss = cross_entropy_loss1+ cross_entropy_loss2
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
-        contrastive_loss_epoch += contrastive_loss.item()
+        contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
 
         # print("batch #",i," cross entropy loss =" , cross_entropy_loss1.item() + cross_entropy_loss2.item() , " contrastive loss = ",contrastive_loss.item())
 
@@ -88,7 +95,7 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
         # get batch
         batch = get_batch(test_set,batch_size)
         normalize_batch(batch)
-        X1, y_true1, X2, y_true2, y = convert_batch_to_tensors(batch)
+        X1, y_true1, X2, y_true2, y, X1_ord, X2_ord, y_ord = convert_batch_to_tensors(batch)
 
         X1 = X1.to(device)
         y_true1 = y_true1.to(device)
@@ -96,22 +103,28 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
         y_true2 = y_true2.to(device)
         y = y.float()
         y = y.to(device)
-
+        X1_ord = X1_ord.to(device)
+        X2_ord = X2_ord.to(device)
+        y_ord = y_ord.to(device)
 
         # Forward pass
         logits1,y_hat1 = model(X1)
         logits2,y_hat2 = model(X2)
+        logits1_ord,_ = model(X1_ord)
+        logits2_ord,_ = model(X2_ord)
 
 
         # loss
         cross_entropy_loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
         cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
-        contrastive_loss = contrastive_loss_criterion(logits1,logits2,y)
+        contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
+        contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
+        # print(logits1.size())
         cross_entropy_loss = cross_entropy_loss1 + cross_entropy_loss2
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
-        contrastive_loss_epoch += contrastive_loss.item()
+        contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
 
        
     epoch_loss = ((contrastive_ratio * contrastive_loss_epoch) + ((1-contrastive_ratio) * cross_entropy_loss_epoch)) / l
@@ -225,7 +238,7 @@ def get_accuracy(model, dataset,batch_size, device):
             # get batch
             batch = get_batch(dataset,batch_size)
             normalize_batch(batch)
-            X1, y_true1, X2, y_true2, y = convert_batch_to_tensors(batch)
+            X1, y_true1, X2, y_true2, y,_,_,_ = convert_batch_to_tensors(batch)
 
             X1 = X1.to(device)
             y_true1 = y_true1.to(device)
