@@ -100,7 +100,7 @@ def convert_batch_to_tensors(batch):
     images = np.asarray(images)
     labels = np.asarray(labels)
     # images = np.expand_dims(images, axis=1)
-    images = np.moveaxis(images, 1, -1)
+    images = np.moveaxis(images, -1, 1)
     # labels = np.reshape(labels,(labels.shape[0],1))
     # print(labels)
     # print(images.shape)
