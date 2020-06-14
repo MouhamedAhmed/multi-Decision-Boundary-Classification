@@ -146,12 +146,16 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
     best_loss = 1e10
     train_losses = []
     valid_losses = []
- 
+    
+    train_set_start, test_set_start,_ = load_data()
+
     # Train model
     for epoch in range(0, epochs):
 
         # load dataset
-        train_set, test_set = load_data()
+        train_set = copy.deepcopy(train_set_start)
+        test_set = copy.deepcopy(test_set_start)
+
         # training
         model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,margin, device)
         train_losses.append(train_loss)
@@ -162,10 +166,10 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
             valid_losses.append(valid_loss)
 
         if epoch % print_every == (print_every - 1):
-            train_set, test_set = load_data()
+            # train_set, test_set = load_data()
 
-            train_acc = get_accuracy(model, train_set,batch_size, device=device)
-            valid_acc = get_accuracy(model, test_set,batch_size, device=device)
+            train_acc = get_accuracy(model, train_set_start,batch_size, device=device)
+            valid_acc = get_accuracy(model, test_set_start,batch_size, device=device)
                 
             print(f'{datetime.now().time().replace(microsecond=0)} --- '
                   f'Epoch: {epoch}\t'
