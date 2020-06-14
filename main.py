@@ -24,7 +24,7 @@ BATCH_SIZE = 64
 N_EPOCHS = 30
 
 IMG_SIZE = 32
-N_CLASSES = 10
+N_CLASSES = 200
 margin = 32
 
 print('contrastive ratio:')

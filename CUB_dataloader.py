@@ -104,8 +104,8 @@ def convert_batch_to_tensors(batch):
     # labels = np.reshape(labels,(labels.shape[0],1))
     # print(labels)
     # print(images.shape)
-    indices_1 = random.sample(range(0, len(images)), len(images)//2)
-    indices = list(range(0, len(images)))
+    indices_1 = random.sample(range(0, images.shape[0]), images.shape[0]//2)
+    indices = list(range(0, images.shape[0]))
     indices_2 = list(set(indices) - set(indices_1)) 
     images1 = [images[i] for i in indices_1]
     images2 = [images[i] for i in indices_2]
