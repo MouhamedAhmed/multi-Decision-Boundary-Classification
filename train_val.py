@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from torchvision import datasets, transforms
 
 import matplotlib.pyplot as plt
-from dataloader import *
+from CUB_dataloader import *
 
 
 
