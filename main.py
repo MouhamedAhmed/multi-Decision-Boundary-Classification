@@ -27,7 +27,7 @@ N_EPOCHS = 30
 
 IMG_SIZE = 128
 N_CLASSES = 200
-margin = 2
+margin = 32
 
 print('contrastive ratio:')
 contrastive_ratio = float(input())
@@ -36,7 +36,7 @@ contrastive_ratio = float(input())
 # instantiate the model
 torch.manual_seed(RANDOM_SEED)
 
-model = LeNet5(N_CLASSES).to(DEVICE)
+model = ResNet50(N_CLASSES).to(DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
