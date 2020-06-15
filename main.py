@@ -13,6 +13,7 @@ from LeNet import *
 from train_val import *
 from torch.utils.data.sampler import SubsetRandomSampler
 from contrastive_loss import *
+from cosine_contrastive_loss import *
 # check device
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
