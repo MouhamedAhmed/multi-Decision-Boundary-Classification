@@ -69,8 +69,8 @@ def get_batch (dataset,batch_size):
         image = image.resize((32,32))
         # convert image to numpy array
         if np.array(image).shape != (32,32,3):
-            print(np.array(image).shape)
-            image.show()
+            image = image.convert('RGB')
+
         image = np.asarray(image)
         
         d = {
