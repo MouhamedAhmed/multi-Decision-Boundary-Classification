@@ -22,12 +22,12 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 # parameters
 RANDOM_SEED = 42
 LEARNING_RATE = 0.0001
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 N_EPOCHS = 30
 
-IMG_SIZE = 128
+IMG_SIZE = 256
 N_CLASSES = 200
-margin = 2
+margin = 32
 
 print('contrastive ratio:')
 contrastive_ratio = float(input())
@@ -36,7 +36,7 @@ contrastive_ratio = float(input())
 # instantiate the model
 torch.manual_seed(RANDOM_SEED)
 
-model = ResNet50(N_CLASSES).to(DEVICE)
+model = LeNet5(N_CLASSES).to(DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
