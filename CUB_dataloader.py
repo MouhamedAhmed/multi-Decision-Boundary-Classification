@@ -65,21 +65,23 @@ def get_batch (dataset,batch_size):
         path = c["path"]
         # load the image
         image = Image.open(path)
+        if np.array(image).shape[2] != 3:
+            print(np.array(image).shape)
         #resize
         image = image.resize((32,32))
         # convert image to numpy array
-        if np.array(image).shape == (32,32,3):
+        if np.array(image).shape != (32,32,3):
+            image = image.convert('RGB')
 
-            image = np.asarray(image)
-            
-            d = {
-                "path": c["path"],
-                "image": image,
-                "label": c["label"]
-            }
-            batch.append(d)
-
-            del dataset[indices[i]]
+        image = np.asarray(image)
+        
+        d = {
+            "path": c["path"],
+            "image": image,
+            "label": c["label"]
+        }
+        batch.append(d)
+        del dataset[indices[i]]
 
     random.shuffle(batch)
     return batch
