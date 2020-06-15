@@ -66,7 +66,7 @@ def get_batch (dataset,batch_size):
         # load the image
         image = Image.open(path)
         #resize
-        image = image.resize((32,32))
+        image = image.resize((32,32,3))
         # convert image to numpy array
         image = np.asarray(image)
         d = {
