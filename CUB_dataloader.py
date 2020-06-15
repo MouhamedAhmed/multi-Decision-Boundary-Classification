@@ -120,10 +120,17 @@ def convert_batch_to_tensors(batch):
     images2 = [images[i] for i in indices_2]
     labels1 = [labels[i] for i in indices_1]
     labels2 = [labels[i] for i in indices_2]
+
+   
+    images1 = images1[0:min(len(images1),len(images2))]
+    images2 = images2[0:min(len(images1),len(images2))]
+    labels1 = labels1[0:min(len(labels1),len(labels2))]
+    labels2 = labels2[0:min(len(labels1),len(labels2))]
+
     y = [int(i != j) for i, j in zip(labels1, labels2)]
 
     
-    
+
     
     images1 = torch.Tensor(images1)
     images2 = torch.Tensor(images2)
