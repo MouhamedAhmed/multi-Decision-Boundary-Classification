@@ -25,9 +25,9 @@ LEARNING_RATE = 0.0001
 BATCH_SIZE = 32
 N_EPOCHS = 30
 
-IMG_SIZE = 256
+IMG_SIZE = 128
 N_CLASSES = 200
-margin = 32
+margin = 2
 
 print('contrastive ratio:')
 contrastive_ratio = float(input())
