@@ -31,19 +31,17 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
     while len(train_set)>0:
          # get batch
         batch = get_batch(train_set,batch_size)
+        if len(batch) == 1:
+            print("ffff")
         normalize_batch(batch)
         X1, y_true1, X2, y_true2, y, X1_ord, X2_ord, y_ord = convert_batch_to_tensors(batch)
-
         X1 = X1.to(device)
         y_true1 = y_true1.to(device)
         X2 = X2.to(device)
         y_true2 = y_true2.to(device)
         y = y.float()
         y = y.to(device)
-        X1_ord = X1_ord.to(device)
-        X2_ord = X2_ord.to(device)
-        y_ord = y_ord.float()
-        y_ord = y_ord.to(device)
+        
 
         optimizer.zero_grad()
 
@@ -51,22 +49,29 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         # Forward pass
         logits1,y_hat1 = model(X1)
         logits2,y_hat2 = model(X2)
-        logits1_ord,_ = model(X1_ord)
-        logits2_ord,_ = model(X2_ord)
+        
+        if X1_ord.numpy().shape[0] != 0 and X2_ord.numpy().shape[0] != 0 and y_ord.numpy().shape[0]:
+            X1_ord = X1_ord.to(device)
+            X2_ord = X2_ord.to(device)
+            y_ord = y_ord.float()
+            y_ord = y_ord.to(device)
+            logits1_ord,_ = model(X1_ord)
+            logits2_ord,_ = model(X2_ord)
+            contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
+            contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
+            contrastive_loss = (contrastive_loss_unord + contrastive_loss_ord)/2
+            contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
+        else:
+            contrastive_loss = 0
 
         # loss
         cross_entropy_loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
         cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
-        contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
-#         print("y:",y)
-        contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
-#         print("y_ord:",y_ord)
-        contrastive_loss = (contrastive_loss_unord + contrastive_loss_ord)/2
+        
         cross_entropy_loss = cross_entropy_loss1+ cross_entropy_loss2
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
-        contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
 
 
         loss = (contrastive_ratio * contrastive_loss) + ((1-contrastive_ratio) * cross_entropy_loss)
@@ -105,29 +110,36 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
         y_true2 = y_true2.to(device)
         y = y.float()
         y = y.to(device)
-        X1_ord = X1_ord.to(device)
-        X2_ord = X2_ord.to(device)
-        y_ord = y_ord.to(device)
-        y_ord = y_ord.float()
+        
 
         # Forward pass
         logits1,y_hat1 = model(X1)
         logits2,y_hat2 = model(X2)
-        logits1_ord,_ = model(X1_ord)
-        logits2_ord,_ = model(X2_ord)
-
-
+        
+        
+        if X1_ord.numpy().shape[0] != 0 and X2_ord.numpy().shape[0] != 0 and y_ord.numpy().shape[0]:
+            X1_ord = X1_ord.to(device)
+            X2_ord = X2_ord.to(device)
+            y_ord = y_ord.to(device)
+            y_ord = y_ord.float()
+            logits1_ord,_ = model(X1_ord)
+            logits2_ord,_ = model(X2_ord)
+            contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
+            contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
+            contrastive_loss = (contrastive_loss_unord + contrastive_loss_ord)/2
+            contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
+        else:
+            contrastive_loss = 0
+            
+         
         # loss
         cross_entropy_loss1 = cross_entropy_loss_criterion(y_hat1, y_true1) 
         cross_entropy_loss2 = cross_entropy_loss_criterion(y_hat2, y_true2) 
 
-        contrastive_loss_unord = contrastive_loss_criterion(logits1,logits2,y)
-        contrastive_loss_ord = contrastive_loss_criterion(logits1_ord,logits2_ord,y_ord)
-        # print(logits1.size())
+        
         cross_entropy_loss = cross_entropy_loss1 + cross_entropy_loss2
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
-        contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
 
        
     epoch_loss = ((contrastive_ratio * contrastive_loss_epoch) + ((1-contrastive_ratio) * cross_entropy_loss_epoch)) / l
@@ -167,9 +179,10 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
 
         if epoch % print_every == (print_every - 1):
             # train_set, test_set = load_data()
-
-            train_acc = get_accuracy(model, train_set_start,batch_size, device=device)
-            valid_acc = get_accuracy(model, test_set_start,batch_size, device=device)
+            train_set = copy.deepcopy(train_set_start)
+            test_set = copy.deepcopy(test_set_start)
+            train_acc = get_accuracy(model, train_set,batch_size, device=device)
+            valid_acc = get_accuracy(model, test_set,batch_size, device=device)
                 
             print(f'{datetime.now().time().replace(microsecond=0)} --- '
                   f'Epoch: {epoch}\t'

@@ -66,8 +66,10 @@ def get_batch (dataset,batch_size):
         # load the image
         image = Image.open(path)
         if len(list(np.array(image).shape)) != 3:
-            print(path)
+#             print(path)
+#             print(np.array(image).shape)
             image = image.convert('RGB')
+#             print(np.array(image).shape)
         #resize
         image = image.resize((32,32))
         # convert image to numpy array
@@ -120,8 +122,7 @@ def convert_batch_to_tensors(batch):
     images2 = [images[i] for i in indices_2]
     labels1 = [labels[i] for i in indices_1]
     labels2 = [labels[i] for i in indices_2]
-
-   
+    
     images1 = images1[0:min(len(images1),len(images2))]
     images2 = images2[0:min(len(images1),len(images2))]
     labels1 = labels1[0:min(len(labels1),len(labels2))]
@@ -130,7 +131,7 @@ def convert_batch_to_tensors(batch):
     y = [int(i != j) for i, j in zip(labels1, labels2)]
 
     
-
+    
     
     images1 = torch.Tensor(images1)
     images2 = torch.Tensor(images2)
@@ -176,8 +177,7 @@ def convert_batch_to_tensors(batch):
     # print(labels_ordered1)
     # print(labels_ordered2)
     
-    if len(images_ordered1) != len(images_ordered2):
-        print("fuck")
+
     y_ordered = [int(i != j) for i, j in zip(labels_ordered1, labels_ordered2)]
 
     images_ordered1 = torch.Tensor(images_ordered1)

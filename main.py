@@ -38,9 +38,10 @@ model = LeNet5(N_CLASSES).to(DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
+cosine_contrastive_loss_criterion = CosineContrastiveLoss(margin)
 
 # start training
-model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
+model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,cosine_contrastive_loss_criterion,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
 print(train_losses)
 print(valid_losses)
 
