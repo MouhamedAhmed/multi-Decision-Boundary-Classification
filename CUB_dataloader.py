@@ -69,7 +69,7 @@ def get_batch (dataset,batch_size):
         image = image.resize((32,32))
         # convert image to numpy array
         image = np.asarray(image)
-        if np.array(image).shape != (32,32,3) :
+        if np.array(image).shape != (32,32,3) path:
             print(np.array(image).shape)
         d = {
             "path": c["path"],
@@ -100,6 +100,7 @@ def convert_batch_to_tensors(batch):
         labels.append(label)
         if np.array(image).shape != (32,32,3) :
             print(np.array(image).shape)
+            image.show()
 
     images = np.asarray(images)
     labels = np.asarray(labels)
