@@ -65,7 +65,7 @@ def get_batch (dataset,batch_size):
         path = c["path"]
         # load the image
         image = Image.open(path)
-        if np.array(image).shape[2] != 3:
+        if len(list(np.array(image).shape)) != 3:
             print(np.array(image).shape)
         #resize
         image = image.resize((32,32))
