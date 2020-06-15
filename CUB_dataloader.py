@@ -169,6 +169,8 @@ def convert_batch_to_tensors(batch):
     # print(labels_ordered1)
     # print(labels_ordered2)
     
+    if len(images_ordered1) != len(images_ordered2):
+        print("fuck")
     y_ordered = [int(i != j) for i, j in zip(labels_ordered1, labels_ordered2)]
 
     images_ordered1 = torch.Tensor(images_ordered1)
