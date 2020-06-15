@@ -96,6 +96,8 @@ def convert_batch_to_tensors(batch):
 
         images.append(image)
         labels.append(label)
+        if np.array(image).shape != (32,32,3) :
+            print(np.array(image).shape)
 
     images = np.asarray(images)
     labels = np.asarray(labels)
