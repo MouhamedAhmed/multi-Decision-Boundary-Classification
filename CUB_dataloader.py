@@ -78,8 +78,8 @@ def get_batch (dataset,batch_size):
                 "label": c["label"]
             }
             batch.append(d)
-            
-        del dataset[indices[i]]
+
+            del dataset[indices[i]]
 
     random.shuffle(batch)
     return batch
