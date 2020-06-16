@@ -21,11 +21,11 @@ class CosineContrastiveLoss(nn.Module):
         output2_norm = output2 / output2.norm(dim=1)[:, None]
         # cos_sim = torch.mm(output1_norm, output2_norm.transpose(0,1))
         cos_sim = torch.bmm(output1_norm.view(output1_norm.size()[0], 1, output1_norm.size()[1]), output2_norm.view(output2_norm.size()[0], output2_norm.size()[1], 1))
-        print("output1:",output1.size())
-        print("output2:",output2.size())
-        print("output1_norm:",output1_norm.size())
-        print("output1_norm:",output2_norm.size())
-        print("cos_sim:",cos_sim.size())
+        # print("output1:",output1.size())
+        # print("output2:",output2.size())
+        # print("output1_norm:",output1_norm.size())
+        # print("output1_norm:",output2_norm.size())
+        # print("cos_sim:",cos_sim.size())
         # output1_mag = torch.norm(output1)
         # output2_mag = torch.norm(output2)
         # output1_norm = torch.div(output1,output1_mag)
@@ -35,5 +35,5 @@ class CosineContrastiveLoss(nn.Module):
         # cos_sim = F.cosine_similarity(output1, output2)
         loss_cos_con = torch.mean((1-label) * torch.div(torch.pow((1.0-cos_sim), 2), 4) +
                                     (label) * torch.pow(cos_sim * torch.lt(cos_sim, self.margin).float(), 2))
-        print("loss:",loss_cos_con)
+        # print("loss:",loss_cos_con)
         return loss_cos_con
