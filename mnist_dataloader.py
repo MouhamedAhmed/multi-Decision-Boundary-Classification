@@ -10,9 +10,9 @@ import random
 
 
 def load_data():
-    datapath = "mnist_png-master/mnist_png"
+    datapath = "fashion-mnist_png-master/data"
     # get training data
-    training_path = datapath + "/training"
+    training_path = datapath + "/train"
     training_labels = os.listdir(training_path)
     training_classes_paths = []
     for i in training_labels:
@@ -29,7 +29,7 @@ def load_data():
             training_images.append(d)
     
     # get testing data
-    testing_path = datapath + "/testing"
+    testing_path = datapath + "/test"
     testing_labels = os.listdir(testing_path)
     testing_classes_paths = []
     for i in testing_labels:
@@ -45,7 +45,7 @@ def load_data():
             }
             testing_images.append(d)
 
-    return training_images,testing_images
+    return training_images,testing_images,[]
 
 ################
 
