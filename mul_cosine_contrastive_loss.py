@@ -15,6 +15,8 @@ class MulCosineContrastiveLoss(nn.Module):
     def __init__(self, margin = 0.4,m1 = 0, m2 = 0):
         super(MulCosineContrastiveLoss, self).__init__()
         self.margin = margin
+        self.m1 = m1
+        self.m2 = m2
 
     def forward(self, output1, output2, label):
         output1_norm = output1 / output1.norm(dim=1)[:, None]
@@ -37,7 +39,7 @@ class MulCosineContrastiveLoss(nn.Module):
                                     (label) * torch.pow(cos_sim * torch.lt(cos_sim, self.margin).float(), 2))
 
         loss_theta = torch.acos(loss_cos_con)
-        loss_cos_con = torch.cos(loss_theta * m1 + m2)
+        loss_cos_con = torch.cos(loss_theta * self.m1 + self.m2)
         
         # print("loss:",loss_cos_con)
         return loss_cos_con
