@@ -37,7 +37,6 @@ class CustomNet(nn.Module):
 
         self.classifier1 = nn.Sequential(
             nn.Linear(in_features=120, out_features=84),
-            nn.BatchNorm2d(84),
             nn.ReLU()
         )
         self.classifier2 = nn.Linear(in_features=84, out_features=n_classes)
