@@ -13,7 +13,7 @@ class MulCosineContrastiveLoss(nn.Module):
     """
 
     def __init__(self, margin = 0.4,m1 = 0, m2 = 0):
-        super(CosineContrastiveLoss, self).__init__()
+        super(MulCosineContrastiveLoss, self).__init__()
         self.margin = margin
 
     def forward(self, output1, output2, label):
