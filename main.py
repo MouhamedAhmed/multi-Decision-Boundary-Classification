@@ -39,7 +39,7 @@ contrastive_ratio = float(input())
 # instantiate the model
 torch.manual_seed(RANDOM_SEED)
 
-model = LeNet5(N_CLASSES).to(DEVICE)
+model = CustomNet(N_CLASSES).to(DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
