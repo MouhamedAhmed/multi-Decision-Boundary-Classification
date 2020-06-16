@@ -19,7 +19,8 @@ class CosineContrastiveLoss(nn.Module):
     def forward(self, output1, output2, label):
         output1_norm = output1 / output1.norm(dim=1)[:, None]
         output2_norm = output2 / output2.norm(dim=1)[:, None]
-        cos_sim = torch.mm(output1_norm, output2_norm.transpose(0,1))
+        # cos_sim = torch.mm(output1_norm, output2_norm.transpose(0,1))
+        cos_sim = torch.bmm(output1_norm.view(output1_norm.size()[0], 1, output1_norm.size()[1]), output2_norm.view(output2_norm.size()[0], output2_norm.size()[1], 1))
         print("output1:",output1.size())
         print("output2:",output2.size())
         print("output1_norm:",output1_norm.size())
