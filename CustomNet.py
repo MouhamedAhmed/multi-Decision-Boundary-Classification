@@ -54,17 +54,11 @@ class CustomNet(nn.Module):
 
 
     def forward(self, x):
-        print(x.size())
         x = self.feature_extractor1(x)
-        print(x.size())
         x = self.feature_extractor2(x)
-        print(x.size())
         x = self.feature_extractor3(x)
-        print(x.size())
         x = self.feature_extractor4(x)
-        print(x.size())
         x = torch.flatten(x, 1)
-        print(x.size())
         l1 = self.classifier1(x)
         l2 = self.classifier2(l1)
         probs = F.softmax(l2, dim=1)
