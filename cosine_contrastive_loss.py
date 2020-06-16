@@ -17,13 +17,16 @@ class CosineContrastiveLoss(nn.Module):
         self.margin = margin
 
     def forward(self, output1, output2, label):
+        output1_norm = output1 / output1.norm(dim=1)[:, None]
+        output2_norm = output2 / output2.norm(dim=1)[:, None]
+        cos_sim = torch.mm(output1_norm, output2_norm.transpose(0,1))
         # output1_mag = torch.norm(output1)
         # output2_mag = torch.norm(output2)
         # output1_norm = torch.div(output1,output1_mag)
         # output2_norm = torch.div(output2,output2_mag)
         # cos_sim = torch.mm(output1_norm,output2_norm)
 
-        cos_sim = F.cosine_similarity(output1, output2)
+        # cos_sim = F.cosine_similarity(output1, output2)
         loss_cos_con = torch.mean((1-label) * torch.div(torch.pow((1.0-cos_sim), 2), 4) +
                                     (label) * torch.pow(cos_sim * torch.lt(cos_sim, self.margin).float(), 2))
         return loss_cos_con
