@@ -20,9 +20,11 @@ class CosineContrastiveLoss(nn.Module):
         output1_norm = output1 / output1.norm(dim=1)[:, None]
         output2_norm = output2 / output2.norm(dim=1)[:, None]
         cos_sim = torch.mm(output1_norm, output2_norm.transpose(0,1))
-        print(output1_norm)
-        print(output2_norm)
-        print(cos_sim)
+        print(output1.size())
+        print(output2.size())
+        print(output1_norm.size())
+        print(output2_norm.size())
+        print(cos_sim.size())
         # output1_mag = torch.norm(output1)
         # output2_mag = torch.norm(output2)
         # output1_norm = torch.div(output1,output1_mag)
