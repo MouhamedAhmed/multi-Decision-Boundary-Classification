@@ -30,7 +30,7 @@ IMG_SIZE = 128
 N_CLASSES = 200
 margin = 32
 m1 = 1.2
-m2 = 0.4
+m2 = 0.0
 print('contrastive ratio:')
 contrastive_ratio = float(input())
 # contrastive_ratio = 0.5
