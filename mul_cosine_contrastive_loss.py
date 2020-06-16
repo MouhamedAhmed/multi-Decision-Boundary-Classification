@@ -2,7 +2,7 @@ import torch.nn.functional as F
 import torch
 import torch.nn as nn
 
-class CosineContrastiveLoss(nn.Module):
+class MulCosineContrastiveLoss(nn.Module):
     """
     Cosine contrastive loss function.
     Based on: http://anthology.aclweb.org/W16-1617
@@ -12,7 +12,7 @@ class CosineContrastiveLoss(nn.Module):
     Margin in the paper is ~0.4.
     """
 
-    def __init__(self, margin=0.4):
+    def __init__(self, margin = 0.4,m1 = 0, m2 = 0):
         super(CosineContrastiveLoss, self).__init__()
         self.margin = margin
 
@@ -36,6 +36,8 @@ class CosineContrastiveLoss(nn.Module):
         loss_cos_con = torch.mean((1-label) * torch.div(torch.pow((1.0-cos_sim), 2), 4) +
                                     (label) * torch.pow(cos_sim * torch.lt(cos_sim, self.margin).float(), 2))
 
+        loss_theta = torch.acos(loss_cos_con)
+        loss_cos_con = torch.cos(loss_theta * m1 + m2)
         
         # print("loss:",loss_cos_con)
         return loss_cos_con

@@ -15,6 +15,7 @@ from train_val import *
 from torch.utils.data.sampler import SubsetRandomSampler
 from contrastive_loss import *
 from cosine_contrastive_loss import *
+from mul_cosine_contrastive_loss import *
 # check device
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -28,7 +29,8 @@ N_EPOCHS = 30
 IMG_SIZE = 128
 N_CLASSES = 200
 margin = 32
-
+m1 = 1.2
+m2 = 0.4
 print('contrastive ratio:')
 contrastive_ratio = float(input())
 # contrastive_ratio = 0.5
@@ -41,8 +43,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
 cosine_contrastive_loss_criterion = CosineContrastiveLoss(margin)
+mul_cosine_contrastive_loss_criterion = MulCosineContrastiveLoss(margin,m1,m2)
 
 # start training
-model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,cosine_contrastive_loss_criterion,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
+model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,mul_cosine_contrastive_loss_criterion,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
  
 
