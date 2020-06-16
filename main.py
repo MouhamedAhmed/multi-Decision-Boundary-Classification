@@ -11,6 +11,7 @@ from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 from LeNet import *
 from ResNet50 import *
+from CustomNet import *
 from train_val import *
 from torch.utils.data.sampler import SubsetRandomSampler
 from contrastive_loss import *
