@@ -55,6 +55,7 @@ class CustomNet(nn.Module):
 
 
     def forward(self, x):
+        print(x.size())
         x = self.feature_extractor1(x)
         print(x.size())
         x = self.feature_extractor2(x)
