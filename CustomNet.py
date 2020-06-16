@@ -64,6 +64,7 @@ class CustomNet(nn.Module):
         x = self.feature_extractor4(x)
         print(x.size())
         x = torch.flatten(x, 1)
+        print(x.size())
         l1 = self.classifier1(x)
         l2 = self.classifier2(l1)
         probs = F.softmax(l2, dim=1)
