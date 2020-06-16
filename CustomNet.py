@@ -34,7 +34,6 @@ class CustomNet(nn.Module):
             nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
 
         )
 
