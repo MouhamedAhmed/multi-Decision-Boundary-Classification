@@ -16,6 +16,8 @@ class LossLayer(nn.Module):
         y = self.weights[0][1]
         x.to(self.device)
         y.to(self.device)
+        contrastive_loss.to(self.device)
+        cross_entropy_loss.to(self.device)
         loss = (torch.pow(contrastive_loss,x)) + ( torch.pow(cross_entropy_loss,y))
         return loss
 
