@@ -72,7 +72,8 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
 
-
+        contrastive_loss.to(device)
+        cross_entropy_loss.to(device)
         loss = lossLayer(contrastive_loss, cross_entropy_loss, contrastive_ratio)
         # loss = (contrastive_ratio * contrastive_loss) + ((1-contrastive_ratio) * cross_entropy_loss)
         i += 1        
