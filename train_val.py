@@ -94,9 +94,9 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
 
 
     with open('cross_losses.json', 'a+') as outfile:
-        json.dump(cross_losses, outfile)
+        json.dump(cross_losses.numpy(), outfile)
     with open('contrastive_losses.json', 'a+') as outfile:
-        json.dump(contrastive_losses, outfile)
+        json.dump(contrastive_losses.numpy(), outfile)
     
     return model,optimizer, epoch_loss, epoch_acc
 
