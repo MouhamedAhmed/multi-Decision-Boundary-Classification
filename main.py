@@ -17,6 +17,8 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from contrastive_loss import *
 from cosine_contrastive_loss import *
 from mul_cosine_contrastive_loss import *
+from loss_layer import *
+
 # check device
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -45,8 +47,8 @@ cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
 cosine_contrastive_loss_criterion = CosineContrastiveLoss(margin)
 mul_cosine_contrastive_loss_criterion = MulCosineContrastiveLoss(margin,m1,m2)
-
+lossLayer = LossLayer()
 # start training
-model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,mul_cosine_contrastive_loss_criterion,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
+model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,mul_cosine_contrastive_loss_criterion,lossLayer,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
  
 

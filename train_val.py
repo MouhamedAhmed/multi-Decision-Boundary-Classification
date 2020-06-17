@@ -13,10 +13,9 @@ from mnist_dataloader import *
 
 
 
-
 ###############
 # train iteration
-def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,margin, device):
+def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,lossLayer,margin, device):
     '''
     Function for the training step of the training loop
     '''
@@ -74,7 +73,8 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         cross_entropy_loss_epoch += cross_entropy_loss.item()
 
 
-        loss = (contrastive_ratio * contrastive_loss) + ((1-contrastive_ratio) * cross_entropy_loss)
+        loss = lossLayer(contrastive_loss, cross_entropy_loss, contrastive_ratio)
+        # loss = (contrastive_ratio * contrastive_loss) + ((1-contrastive_ratio) * cross_entropy_loss)
         i += 1        
 
         # Backward pass
@@ -87,7 +87,7 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
 
 
 # validate 
-def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion,contrastive_ratio,margin, device):
+def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion,contrastive_ratio,lossLayer,margin, device):
     '''
     Function for the validation step of the training loop
     '''
@@ -149,7 +149,7 @@ def validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrasti
 
 
 
-def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion, batch_size, optimizer, epochs,contrastive_ratio,margin, device, print_every=1):
+def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion,lossLayer, batch_size, optimizer, epochs,contrastive_ratio,margin, device, print_every=1):
     '''
     Function defining the entire training loop
     '''
@@ -169,12 +169,12 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
         test_set = copy.deepcopy(test_set_start)
 
         # training
-        model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,margin, device)
+        model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,lossLayer,margin, device)
         train_losses.append(train_loss)
 
         # validation
         with torch.no_grad():
-            model, valid_loss, valid_acc = validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion,contrastive_ratio,margin, device)
+            model, valid_loss, valid_acc = validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion,contrastive_ratio,lossLayer,margin, device)
             valid_losses.append(valid_loss)
 
         if epoch % print_every == (print_every - 1):
