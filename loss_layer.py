@@ -10,7 +10,6 @@ class LossLayer(nn.Module):
         weights.fill_(1.0)
         self.weights = nn.Parameter(weights)  # nn.Parameter is a Tensor that's a module parameter.
        
-        print(x)
     def forward(self, contrastive_loss, cross_entropy_loss, contrastive_ratio):
         x = self.weights[0][0]
         y = self.weights[0][1]
