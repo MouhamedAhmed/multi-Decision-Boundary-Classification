@@ -18,6 +18,7 @@ class CustomNet(nn.Module):
         self.feature_extractor1 = nn.Sequential(            
             nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
         )
 
         self.feature_extractor2 = nn.Sequential(            
@@ -25,23 +26,23 @@ class CustomNet(nn.Module):
             nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1),
             nn.BatchNorm2d(16),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+
         )
 
         self.feature_extractor3 = nn.Sequential(           
             
-            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=5, stride=1),
+            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
 
         )
 
         self.feature_extractor4 = nn.Sequential(           
 
-            nn.Conv2d(in_channels=32, out_channels=120, kernel_size=8, stride=1),
+            nn.Conv2d(in_channels=32, out_channels=120, kernel_size=3, stride=1),
             nn.BatchNorm2d(120),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
         )
 
         self.classifier1 = nn.Sequential(
