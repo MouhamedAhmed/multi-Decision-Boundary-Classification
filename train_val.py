@@ -90,9 +90,9 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         optimizer.step()
 
         with open('cross_losses.json', 'a+') as outfile:
-            json.dump(cross_entropy_loss.float(), outfile)
+            json.dump(cross_entropy_loss.item(), outfile)
         with open('contrastive_losses.json', 'a+') as outfile:
-            json.dump(contrastive_loss.float(), outfile)
+            json.dump(contrastive_loss.item(), outfile)
         
     epoch_loss = ((contrastive_ratio * contrastive_loss_epoch) + ((1-contrastive_ratio) * cross_entropy_loss_epoch)) / l
     epoch_acc = correct / l
