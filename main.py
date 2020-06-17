@@ -47,7 +47,7 @@ cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
 cosine_contrastive_loss_criterion = CosineContrastiveLoss(margin)
 mul_cosine_contrastive_loss_criterion = MulCosineContrastiveLoss(margin,m1,m2)
-lossLayer = LossLayer()
+lossLayer = LossLayer(DEVICE)
 # start training
 model, optimizer, train_losses, valid_losses = training_loop(model, cross_entropy_loss_criterion,mul_cosine_contrastive_loss_criterion,lossLayer,BATCH_SIZE, optimizer, N_EPOCHS,contrastive_ratio,margin, DEVICE)
  
