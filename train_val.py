@@ -27,6 +27,10 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
     l = len(train_set)/batch_size
     correct = 0
     i = 0
+
+    contrastive_losses = []
+    cross_losses = []
+
     while len(train_set)>0:
          # get batch
         batch = get_batch(train_set,batch_size)
@@ -71,6 +75,9 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         cross_entropy_loss = cross_entropy_loss1+ cross_entropy_loss2
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
+        
+        contrastive_losses.append(contrastive_loss)
+        cross_losses.append(cross_entropy_loss)
 
         contrastive_loss.to(device)
         cross_entropy_loss.to(device)
@@ -84,6 +91,13 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         
     epoch_loss = ((contrastive_ratio * contrastive_loss_epoch) + ((1-contrastive_ratio) * cross_entropy_loss_epoch)) / l
     epoch_acc = correct / l
+
+
+    with open('cross_losses.json', 'w+') as outfile:
+        json.dump(cross_losses, outfile)
+    with open('contrastive_losses.json', 'w+') as outfile:
+        json.dump(contrastive_losses, outfile)
+    
     return model,optimizer, epoch_loss, epoch_acc
 
 
