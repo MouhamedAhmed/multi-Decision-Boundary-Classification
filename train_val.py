@@ -76,9 +76,10 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
 
         cross_entropy_loss_epoch += cross_entropy_loss.item()
         
-        contrastive_losses.append(contrastive_loss)
-        cross_losses.append(cross_entropy_loss)
-
+        # contrastive_losses.append(contrastive_loss)
+        # cross_losses.append(cross_entropy_loss)
+        cross_losses.append(cross_entropy_loss.item())
+        contrastive_losses.append(contrastive_loss.item())
         contrastive_loss.to(device)
         cross_entropy_loss.to(device)
         loss = lossLayer(contrastive_loss, cross_entropy_loss, contrastive_ratio)
@@ -89,21 +90,14 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         loss.backward()
         optimizer.step()
 
-        with open('cross_losses.json', 'a') as outfile:
-            json.dump(cross_entropy_loss.item(), outfile)
-            json.dump(',', outfile)
-        with open('contrastive_losses.json', 'a') as outfile:
-            json.dump(contrastive_loss.item(), outfile)
-            json.dump(',', outfile)
 
-        
     epoch_loss = ((contrastive_ratio * contrastive_loss_epoch) + ((1-contrastive_ratio) * cross_entropy_loss_epoch)) / l
     epoch_acc = correct / l
 
 
     
     
-    return model,optimizer, epoch_loss, epoch_acc
+    return model,optimizer, epoch_loss, epoch_acc,contrastive_losses,cross_losses
 
 
 # validate 
@@ -173,18 +167,15 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
     '''
     Function defining the entire training loop
     '''
-    # json files for losses
-    with open('cross_losses.json', 'a') as outfile:
-        json.dump('[', outfile)
-    with open('contrastive_losses.json', 'a') as outfile:
-        json.dump('[', outfile)
+
     # set objects for storing metrics
     best_loss = 1e10
     train_losses = []
     valid_losses = []
     
     train_set_start, test_set_start,_ = load_data()
-
+    contrastive_losses = []
+    cross_losses = []
     # Train model
     for epoch in range(0, epochs):
 
@@ -193,9 +184,10 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
         test_set = copy.deepcopy(test_set_start)
 
         # training
-        model, optimizer, train_loss, train_acc = train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,lossLayer,margin, device)
+        model, optimizer, train_loss, train_acc,contrastive_l,cross_l = train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion, optimizer,contrastive_ratio,lossLayer,margin, device)
         train_losses.append(train_loss)
-
+        cross_losses.append(cross_l)
+        contrastive_losses.append(contrastive_l)
         # validation
         with torch.no_grad():
             model, valid_loss, valid_acc = validate(test_set, batch_size, model, cross_entropy_loss_criterion,contrastive_loss_criterion,contrastive_ratio,lossLayer,margin, device)
@@ -218,9 +210,9 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
     plot_losses(train_losses, valid_losses)
     # json files for losses
     with open('cross_losses.json', 'a') as outfile:
-        json.dump(']', outfile)
+        json.dump(cross_losses, outfile)
     with open('contrastive_losses.json', 'a') as outfile:
-        json.dump(']', outfile)
+        json.dump(contrastive_losses, outfile)
     return model, optimizer, train_losses, valid_losses
 
 
