@@ -89,10 +89,13 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         loss.backward()
         optimizer.step()
 
-        with open('cross_losses.json', 'w') as outfile:
+        with open('cross_losses.json', 'a') as outfile:
             json.dump(cross_entropy_loss.item(), outfile)
-        with open('contrastive_losses.json', 'w') as outfile:
+            json.dump(',', outfile)
+        with open('contrastive_losses.json', 'a') as outfile:
             json.dump(contrastive_loss.item(), outfile)
+            json.dump(',', outfile)
+
         
     epoch_loss = ((contrastive_ratio * contrastive_loss_epoch) + ((1-contrastive_ratio) * cross_entropy_loss_epoch)) / l
     epoch_acc = correct / l
@@ -170,7 +173,11 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
     '''
     Function defining the entire training loop
     '''
-    
+    # json files for losses
+    with open('cross_losses.json', 'a') as outfile:
+        json.dump('[', outfile)
+    with open('contrastive_losses.json', 'a') as outfile:
+        json.dump('[', outfile)
     # set objects for storing metrics
     best_loss = 1e10
     train_losses = []
@@ -209,7 +216,11 @@ def training_loop(model, cross_entropy_loss_criterion,contrastive_loss_criterion
                   f'Valid accuracy: {100 * valid_acc:.2f}')
 
     plot_losses(train_losses, valid_losses)
-    
+    # json files for losses
+    with open('cross_losses.json', 'a') as outfile:
+        json.dump(']', outfile)
+    with open('contrastive_losses.json', 'a') as outfile:
+        json.dump(']', outfile)
     return model, optimizer, train_losses, valid_losses
 
 
