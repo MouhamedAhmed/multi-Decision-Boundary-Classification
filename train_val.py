@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from torchvision import datasets, transforms
 
 import matplotlib.pyplot as plt
-from mnist_dataloader import *
+from LFW_dataloader import *
 import json
 
 
