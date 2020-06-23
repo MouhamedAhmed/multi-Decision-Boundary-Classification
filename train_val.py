@@ -65,7 +65,7 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
             contrastive_loss = (contrastive_loss_unord + contrastive_loss_ord)/2
             contrastive_loss_epoch += (contrastive_loss_unord.item() + contrastive_loss_ord.item())/2
         else:
-            contrastive_loss = torch.FloatTensor([0])
+            contrastive_loss = torch.FloatTensor(0.0)
             
 
         # loss
