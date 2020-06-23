@@ -26,8 +26,8 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # parameters
 RANDOM_SEED = 42
-LEARNING_RATE = 0.00001
-BATCH_SIZE = 32
+LEARNING_RATE = 0.0001
+BATCH_SIZE = 16
 N_EPOCHS = 150
 
 IMG_SIZE = 32
