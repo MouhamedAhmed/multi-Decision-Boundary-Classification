@@ -69,9 +69,9 @@ def get_batch (dataset,batch_size):
         # if len(list(np.array(image).shape)) != 3:
         #     image = image.convert('RGB')
         #resize
-        image = image.resize((128,128))
+        image = image.resize((224,224))
         # convert image to numpy array
-        # if np.array(image).shape != (128,128,3):
+        # if np.array(image).shape != (224,224,3):
         #     image = image.convert('RGB')
 
         image = np.asarray(image)
@@ -93,6 +93,7 @@ def get_batch (dataset,batch_size):
 ##################
 def normalize_batch(batch):
     for i in batch:
+        print(i["image"])
         i["image"] =  i["image"]/255
 
 ##################
@@ -106,7 +107,7 @@ def convert_batch_to_tensors(batch):
 
         images.append(image)
         labels.append(label)
-        if np.array(image).shape != (128,128,3) :
+        if np.array(image).shape != (224,224,3) :
             print(np.array(image).shape)
 
     images = np.asarray(images)
