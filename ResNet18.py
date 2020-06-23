@@ -19,13 +19,13 @@ class ResNet18(nn.Module):
         self.classifier = nn.Linear(in_features=1000, out_features=n_classes)
 
         self.classifier1 = nn.Sequential(
-            nn.Linear(in_features=1000, out_features=512),
-            nn.BatchNorm2d(512),
-            nn.ReLU(),
+            # nn.Linear(in_features=1000, out_features=512),
+            # nn.BatchNorm2d(512),
+            # nn.ReLU(),
 
-            nn.Linear(in_features=512, out_features=256),
-            nn.BatchNorm2d(256),
-            nn.ReLU(),
+            # nn.Linear(in_features=512, out_features=256),
+            # nn.BatchNorm2d(256),
+            # nn.ReLU(),
 
             nn.Linear(in_features=256, out_features=128),
             nn.BatchNorm2d(128),
@@ -40,7 +40,7 @@ class ResNet18(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = torch.flatten(x, 1)
-        # logits = self.classifier1(x)
+        logits = self.classifier1(x)
         probs = F.softmax(x, dim=1)
        
         return x, probs
