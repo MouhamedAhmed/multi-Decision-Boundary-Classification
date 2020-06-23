@@ -93,17 +93,18 @@ def get_batch (dataset,batch_size):
 ##################
 def normalize_batch(batch):
     for i in batch:
-        print(i["image"])
-        i["image"] =  i["image"]/255
+        i["image"] =  i["image"]//255
 
 ##################
 def convert_batch_to_tensors(batch):
     batch_size = len(batch)
     images = []
     labels = []
+    print("batch:::::::::::::::::::")
     for i in batch:
         image = i["image"]
         label = i["label"]
+        print(label)
 
         images.append(image)
         labels.append(label)
