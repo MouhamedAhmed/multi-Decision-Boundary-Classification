@@ -15,23 +15,12 @@ class ResNet18(nn.Module):
     def __init__(self, n_classes):
         super(ResNet18, self).__init__()
         self.n = n_classes
-        self.feature_extractor = resnet18()   
-        self.classifier = nn.Linear(in_features=1000, out_features=n_classes)
+        self.feature_extractor = torch.nn.Sequential(*(list(resnet18().children())[:-1])) 
+        self.classifier = nn.Linear(in_features=512, out_features=n_classes)
 
         self.classifier1 = nn.Sequential(
-            # nn.Linear(in_features=1000, out_features=512),
-            # nn.BatchNorm2d(512),
-            # nn.ReLU(),
-
-            # nn.Linear(in_features=512, out_features=256),
-            # nn.BatchNorm2d(256),
-            # nn.ReLU(),
-
-            nn.Linear(in_features=256, out_features=128),
+            nn.Linear(in_features=512, out_features=n_classes),
             nn.ReLU(),
-
-            nn.Linear(in_features=128, out_features=n_classes),
-            nn.ReLU()
         )
 
 
@@ -39,13 +28,13 @@ class ResNet18(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = torch.flatten(x, 1)
-        logits = self.classifier1(x)
+        logits = self.classifier(x)
+        # logits = self.classifier1(x)
         probs = F.softmax(logits, dim=1)
        
         return x, probs
 
 # m = ResNet18(55)   
-# m.feature_extractor.fc = nn.Linear(512,256)
 # print(m)
 # i = np.random.rand(16,3,128,128)
 # t = torch.from_numpy(i).to('cuda')
@@ -53,4 +42,8 @@ class ResNet18(nn.Module):
 # # print(t)
 # m = m.float().to('cuda')
 # u,p = m(t.float())
-# print(p.size())
+# print(u.size(),p.size())
+# layer = m.feature_extractor._modules.get('avgpool')
+
+# newmodel = torch.nn.Sequential(*(list(resnet18().children())[:-1]))
+# print(newmodel)
