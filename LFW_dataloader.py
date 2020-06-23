@@ -60,7 +60,7 @@ def get_batch (dataset,batch_size):
 
     # get paths
     batch = []
-    indices.sort(reverse=True) 
+    # indices.sort(reverse=True) 
     for i in range (len(indices)):
         c = copy.deepcopy(dataset[indices[i]])
         path = c["path"]
@@ -85,9 +85,10 @@ def get_batch (dataset,batch_size):
             "label": c["label"]
         }
         batch.append(d)
+    for i in range (len(indices)):
         del dataset[indices[i]]
 
-    random.shuffle(batch)
+    # random.shuffle(batch)
     return batch
 
 ##################
