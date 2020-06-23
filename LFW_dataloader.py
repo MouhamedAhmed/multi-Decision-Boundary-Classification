@@ -16,7 +16,7 @@ def load_data():
     datapath = "70-20-LFW"
     labels_str = os.listdir(datapath)
     labels = np.arange(len(labels_str))
-    labels *= 10
+    # labels *= 10
     for i in range(len(labels_str)):
         label = labels[i]
         label_path = datapath + "/" + labels_str[i]
@@ -100,16 +100,14 @@ def convert_batch_to_tensors(batch):
     batch_size = len(batch)
     images = []
     labels = []
-    print("batch:::::::::::::::::::")
     for i in batch:
         image = i["image"]
         label = i["label"]
-        print(label)
 
         images.append(image)
         labels.append(label)
-        if np.array(image).shape != (224,224,3) :
-            print(np.array(image).shape)
+        # if np.array(image).shape != (224,224,3) :
+        #     print(np.array(image).shape)
 
     images = np.asarray(images)
     labels = np.asarray(labels)
