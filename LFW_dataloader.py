@@ -66,11 +66,8 @@ def get_batch (dataset,batch_size):
         path = c["path"]
         # load the image
         image = Image.open(path)
-        if len(list(np.array(image).shape)) != 3:
-#             print(path)
-#             print(np.array(image).shape)
-            image = image.convert('RGB')
-#             print(np.array(image).shape)
+        # if len(list(np.array(image).shape)) != 3:
+        #     image = image.convert('RGB')
         #resize
         image = image.resize((128,128))
         # convert image to numpy array

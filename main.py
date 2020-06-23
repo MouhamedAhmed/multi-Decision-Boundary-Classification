@@ -45,6 +45,7 @@ torch.manual_seed(RANDOM_SEED)
 model = ResNet18(N_CLASSES).to(DEVICE)
 # in case of resnet
 # model.feature_extractor.fc = nn.Linear(512,N_CLASSES)
+model.feature_extractor[0] = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 model = model.to(DEVICE)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
