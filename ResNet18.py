@@ -40,7 +40,11 @@ class ResNet18(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = torch.flatten(x, 1)
-        logits = self.classifier1(x)
-        probs = F.softmax(logits, dim=1)
+        # logits = self.classifier1(x)
+        probs = F.softmax(x, dim=1)
        
         return x, probs
+
+# m = ResNet18(55)   
+# m.feature_extractor.fc = nn.Linear(512,55)
+# print(m)

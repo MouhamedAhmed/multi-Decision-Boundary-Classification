@@ -43,6 +43,10 @@ contrastive_ratio = float(input())
 torch.manual_seed(RANDOM_SEED)
 
 model = ResNet18(N_CLASSES).to(DEVICE)
+# in case of resnet
+model.feature_extractor.fc = nn.Linear(512,N_CLASSES)
+
+
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
 contrastive_loss_criterion = ContrastiveLoss(margin)
