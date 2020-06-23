@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 import matplotlib.pyplot as plt
-from torchvision.models.resnet import resnet50
+from torchvision.models.resnet import resnet18
 class ResNet18(nn.Module):
 
     def __init__(self, n_classes):
