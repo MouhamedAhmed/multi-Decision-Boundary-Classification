@@ -52,6 +52,7 @@ def train(train_set, batch_size, model, cross_entropy_loss_criterion,contrastive
         # Forward pass
         logits1,y_hat1 = model(X1)
         logits2,y_hat2 = model(X2)
+        print(y_hat1)
         
         if X1_ord.numpy().shape[0] != 0 and X2_ord.numpy().shape[0] != 0 and y_ord.numpy().shape[0]:
             X1_ord = X1_ord.to(device)
