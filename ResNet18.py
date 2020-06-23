@@ -44,13 +44,13 @@ class ResNet18(nn.Module):
        
         return x, probs
 
-m = ResNet18(55)   
-m.feature_extractor.fc = nn.Linear(512,256)
-print(m)
-i = np.random.rand(16,3,128,128)
-t = torch.from_numpy(i).to('cuda')
-# t = t.type(torch.DoubleTensor)
-# print(t)
-m = m.float().to('cuda')
-u,p = m(t.float())
-print(p.size())
+# m = ResNet18(55)   
+# m.feature_extractor.fc = nn.Linear(512,256)
+# print(m)
+# i = np.random.rand(16,3,128,128)
+# t = torch.from_numpy(i).to('cuda')
+# # t = t.type(torch.DoubleTensor)
+# # print(t)
+# m = m.float().to('cuda')
+# u,p = m(t.float())
+# print(p.size())
