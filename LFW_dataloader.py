@@ -16,6 +16,7 @@ def load_data():
     datapath = "70-20-LFW"
     labels_str = os.listdir(datapath)
     labels = np.arange(len(labels_str))
+    labels *= 10
     for i in range(len(labels_str)):
         label = labels[i]
         label_path = datapath + "/" + labels_str[i]
