@@ -85,6 +85,8 @@ def get_batch (dataset,batch_size):
             "label": c["label"]
         }
         batch.append(d)
+
+    indices.sort(reverse=True) 
     for i in range (len(indices)):
         del dataset[indices[i]]
 
