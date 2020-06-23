@@ -45,7 +45,7 @@ torch.manual_seed(RANDOM_SEED)
 model = ResNet18(N_CLASSES).to(DEVICE)
 # in case of resnet
 model.feature_extractor.fc = nn.Linear(512,N_CLASSES)
-model = model.to(device)
+model = model.to(DEVICE)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 cross_entropy_loss_criterion = nn.CrossEntropyLoss()
