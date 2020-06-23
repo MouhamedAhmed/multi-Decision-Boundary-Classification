@@ -39,7 +39,6 @@ class ResNet18(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = torch.flatten(x, 1)
-        print(x.size())
         logits = self.classifier1(x)
         probs = F.softmax(logits, dim=1)
        
